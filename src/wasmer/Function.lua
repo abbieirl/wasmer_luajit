@@ -27,9 +27,8 @@ function Function:type() end
 
 ---@param args Value[]
 function Function:call(args)
-    local argss = Values.new(args)
     local results = Values.new()
-    cffi.wasm_func_call(self.ptr, argss.ptr, results.ptr)
+    cffi.wasm_func_call(self.ptr, Values.new(args).ptr, results.ptr)
     return results
 end
 
