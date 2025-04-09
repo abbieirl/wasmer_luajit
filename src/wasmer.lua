@@ -14,6 +14,7 @@ local wasmer = {
     Target = require "wasmer.Target",
     Triple = require "wasmer.Triple",
     Value = require "wasmer.Value",
+    Values = require "wasmer.Values",
     wat2wasm = require "wasmer.wat2wasm"
 }
 
@@ -29,7 +30,7 @@ _G.Imports = wasmer.Imports
 _G.Exports = wasmer.Exports
 _G.Instance = wasmer.Instance
 _G.Value = wasmer.Value
-_G.wat2wasm = wasmer.wat2wasm
+_G.Values = wasmer.Values
 
 -- ---@param path string
 -- function load(path) end

@@ -23,6 +23,7 @@ ffi.cdef [[
 
     void wasm_val_vec_new(wasm_val_vec_t* out, size_t size, wasm_val_t* ptr);
     void wasm_val_vec_new_empty(wasm_val_vec_t* out);
+    void wasm_val_vec_new_uninitialized(wasm_val_vec_t* out);
 
     typedef struct wasm_func_t wasm_func_t;
 

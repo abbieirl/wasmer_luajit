@@ -25,10 +25,13 @@ end
 
 function Function:type() end
 
----@param args Value[]
-function Function:call(args)
-    local results = Values.new()
-    cffi.wasm_func_call(self.ptr, Values.new(args).ptr, results.ptr)
+---@param args Values[]
+---@param results Values[]
+function Function:call(args, results)
+    local trap = cffi.wasm_func_call(self.ptr, args.ptr, results.ptr)
+    if trap then
+        error("TRAP")
+    end
     return results
 end
 

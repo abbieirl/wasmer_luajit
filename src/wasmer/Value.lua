@@ -2,7 +2,7 @@ local cffi = require "cffi"
 local ffi = require "ffi"
 
 ---@class Value
----@field ptr { of: { i32: userdata, i64: userdata, f32: userdata, f64: userdata } }
+---@field ptr { kind: integer, of: { i32: userdata, i64: userdata, f32: userdata, f64: userdata, ref: userdata } }
 local Value = {}
 Value.Type = {
     I32 = 0,
@@ -13,80 +13,45 @@ Value.Type = {
 }
 Value.__index = Value
 
----@param number number
----@return Value
-function Value.I32(number)
+function Value.new(type, value)
     local self = setmetatable({}, Value)
-    local value = ffi.new("wasm_val_t")
-    value.kind = Value.Type.I32
-    value.of.i32 = number
-    self.ptr = value
-    return self
-end
-
----@param number number
----@return Value
-function Value.F32(number)
-    local self = setmetatable({}, Value)
-    local value = ffi.new("wasm_val_t")
-    value.kind = Value.Type.F32
-    value.of.f32 = number
-    self.ptr = value
-    return self
-end
-
----@param number number
----@return Value
-function Value.I64(number)
-    local self = setmetatable({}, Value)
-    local value = ffi.new("wasm_val_t")
-    value.kind = Value.Type.I64
-    value.of.i64 = number
-    self.ptr = value
-    return self
-end
-
----@param number number
----@return Value
-function Value.F64(number)
-    local self = setmetatable({}, Value)
-    local value = ffi.new("wasm_val_t")
-    value.kind = Value.Type.F64
-    value.of.f64 = number
-    self.ptr = value
-    return self
-end
-
-function Value.ExternRef()
-    local self = setmetatable({}, Value)
-    local value = ffi.new("wasm_val_t")
-    value.kind = Value.Type.ExternRef
-    value.of.ref = ffi.NULL
+    local wasm_value = ffi.new("wasm_val_t")
+    wasm_value.kind = type
+    if type == Value.Type.I32 then
+        wasm_value.of.i32 = value
+    elseif type == Value.Type.I64 then
+        wasm_value.of.i64 = value
+    elseif type == Value.Type.F32 then
+        wasm_value.of.f32 = value
+    elseif type == Value.Type.F64 then
+        wasm_value.of.f64 = value
+    elseif type == Value.Type.ExternRef then
+        wasm_value.of.ref = ffi.NULL
+    end
+    self.ptr = wasm_value
     return self
 end
 
 ---@param ptr userdata
 function Value.from_ptr(ptr)
     local self = setmetatable({}, Value)
-    self.ptr = ptr --[[@as { of: { i32: userdata, i64: userdata, f32: userdata, f64: userdata } }]]
+    self.ptr = ptr --[[@as { kind: integer, of: { i32: userdata, i64: userdata, f32: userdata, f64: userdata, ref: userdata } }]]
     return self
 end
 
-function Value:of(type)
-    if type == Value.Type.I32 then
+function Value:of()
+    if self.ptr.kind == Value.Type.I32 then
         return tonumber(self.ptr.of.i32)
-    end
-
-    if type == Value.Type.I64 then
+    elseif self.ptr.kind == Value.Type.I64 then
         return tonumber(self.ptr.of.i64)
-    end
-
-    if type == Value.Type.F32 then
+    elseif self.ptr.kind == Value.Type.F32 then
         return tonumber(self.ptr.of.f32)
-    end
-
-    if type == Value.Type.F64 then
+    elseif self.ptr.kind == Value.Type.F64 then
         return tonumber(self.ptr.of.f64)
+    elseif self.ptr.kind == Value.Type.ExternRef then
+        return self.ptr.of.ref
+    else
+        error("Unknown or unsupported type")
     end
 end
 
