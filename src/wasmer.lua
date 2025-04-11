@@ -23,6 +23,8 @@ local wasmer = {
 -- end
 
 _G.Bytes = wasmer.Bytes
+_G.Compiler = wasmer.Compiler
+_G.Config = wasmer.Config
 _G.Engine = wasmer.Engine
 _G.Store = wasmer.Store
 _G.Module = wasmer.Module

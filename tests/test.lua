@@ -1,7 +1,11 @@
 package.path = package.path .. ";./src/?.lua"
 require "wasmer"
 
-local store = Store.new()
+local config = Config.new()
+config:set_compiler(Compiler.LLVM)
+
+local engine = Engine.new()
+local store = Store.new(engine)
 
 local module = Module.new(store, [[
     (module
@@ -11,18 +15,6 @@ local module = Module.new(store, [[
     )
 ]])
 
-print("Exports: " .. module:exports():size())
-
-local instance = Instance.new(store, module)
-local add = instance.exports[1]:as_function() --[[@as Function]]
-
-
-local args = Values.new({ Value.new(Value.Type.I32, 3), Value.new(Value.Type.I32, 4) })
-local results = Values.new({ Value.new(Value.Type.ExternRef, 0) })
-
-add:call(args, results)
-
-print("Results: " .. results:size())
-print(results[1]:of(Value.Type.I32))
+local exports = module:exports();
 
 return 1

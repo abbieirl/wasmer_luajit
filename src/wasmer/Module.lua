@@ -1,5 +1,6 @@
 local cffi = require "cffi"
 local wat2wasm = require "wasmer.wat2wasm"
+local Store = require "wasmer.Store"
 
 ---@class Module
 ---@field ptr userdata
@@ -10,6 +11,9 @@ Module.__index = Module
 ---@param bytes string
 ---@return Module
 function Module.new(store, bytes)
+    assert(store and getmetatable(store) == Store, "Expected store to be an instance of Store")
+    assert(type(bytes) == "string", "Expected bytes to be a string.")
+
     local self = setmetatable({}, Module)
     self.ptr = cffi.wasm_module_new(store.ptr, wat2wasm(bytes).ptr)
     return self

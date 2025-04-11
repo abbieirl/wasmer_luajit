@@ -16,10 +16,29 @@ function Exports.new()
     return self
 end
 
+---@param name string
+function Exports:get(name)
+    
+end
+
 ---@return number
 function Exports:size()
     ---@diagnostic disable-next-line
     return tonumber(self.ptr.size)
+end
+
+function Exports:__index(index)
+    ---Method indexing
+    if type(index) == "string" then
+        return Exports[index]
+    end
+
+    ---Array indexing
+    if type(index) == "number" and index > 0 and index <= self:size() then
+        return nil -- TODO
+    end
+
+    return nil
 end
 
 return Exports
